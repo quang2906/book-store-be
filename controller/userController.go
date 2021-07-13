@@ -45,3 +45,31 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	repo.CreateUser(newUser)
 	responseWithJSON(w, http.StatusCreated, newUser)
 }
+
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["id"])
+
+	if err != nil {
+		responseWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Invalid user id"})
+		return
+	}
+
+	var updateUser *model.User
+	if err := json.NewDecoder(r.Body).Decode(&updateUser); err != nil {
+		responseWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Invalid body"})
+		return
+	}
+	updateUser.Id = int64(id)
+
+	users := repo.GetAllUsers()
+	for _, category := range users {
+		if category.Id == int64(id) {
+			repo.UpdateUserById(int64(id), updateUser)
+			responseWithJSON(w, http.StatusOK, updateUser)
+			return
+		}
+	}
+
+	responseWithJSON(w, http.StatusNotFound, map[string]string{"message": "User not found"})
+}

@@ -71,7 +71,7 @@ func UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	responseWithJSON(w, http.StatusNotFound, map[string]string{"message": "Todo not found"})
+	responseWithJSON(w, http.StatusNotFound, map[string]string{"message": "Category not found"})
 }
 
 func DeleteCategoryById(w http.ResponseWriter, r *http.Request) {
