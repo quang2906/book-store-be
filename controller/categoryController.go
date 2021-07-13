@@ -35,29 +35,29 @@ func GetCategoryById(w http.ResponseWriter, r *http.Request) {
 	responseWithJSON(w, http.StatusNotFound, map[string]string{"message": "Repository not found"})
 }
 
-func CreateCategory(writer http.ResponseWriter, request *http.Request) {
+func CreateCategory(w http.ResponseWriter, r *http.Request) {
 	var newCategory *model.Category
-	if err := json.NewDecoder(request.Body).Decode(&newCategory); err != nil {
-		responseWithJSON(writer, http.StatusBadRequest, map[string]string{"message": "Invalid body"})
+	if err := json.NewDecoder(r.Body).Decode(&newCategory); err != nil {
+		responseWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Invalid body"})
 		return
 	}
 
 	repo.CreateCategory(newCategory)
-	responseWithJSON(writer, http.StatusCreated, newCategory)
+	responseWithJSON(w, http.StatusCreated, newCategory)
 }
 
-func UpdateCategory(writer http.ResponseWriter, request *http.Request) {
-	params := mux.Vars(request)
+func UpdateCategory(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["id"])
 
 	if err != nil {
-		responseWithJSON(writer, http.StatusBadRequest, map[string]string{"message": "Invalid category id"})
+		responseWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Invalid category id"})
 		return
 	}
 
 	var updateCategory *model.Category
-	if err := json.NewDecoder(request.Body).Decode(&updateCategory); err != nil {
-		responseWithJSON(writer, http.StatusBadRequest, map[string]string{"message": "Invalid body"})
+	if err := json.NewDecoder(r.Body).Decode(&updateCategory); err != nil {
+		responseWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Invalid body"})
 		return
 	}
 	updateCategory.Id = int64(id)
@@ -66,20 +66,20 @@ func UpdateCategory(writer http.ResponseWriter, request *http.Request) {
 	for _, category := range categories {
 		if category.Id == int64(id) {
 			repo.UpdateCategoryById(int64(id), updateCategory)
-			responseWithJSON(writer, http.StatusOK, updateCategory)
+			responseWithJSON(w, http.StatusOK, updateCategory)
 			return
 		}
 	}
 
-	responseWithJSON(writer, http.StatusNotFound, map[string]string{"message": "Todo not found"})
+	responseWithJSON(w, http.StatusNotFound, map[string]string{"message": "Todo not found"})
 }
 
-func DeleteCategoryById(writer http.ResponseWriter, request *http.Request) {
-	params := mux.Vars(request)
+func DeleteCategoryById(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["id"])
 
 	if err != nil {
-		responseWithJSON(writer, http.StatusBadRequest, map[string]string{"message": "Invalid category id"})
+		responseWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Invalid category id"})
 		return
 	}
 
@@ -87,16 +87,16 @@ func DeleteCategoryById(writer http.ResponseWriter, request *http.Request) {
 	for _, category := range categories {
 		if category.Id == int64(id) {
 			repo.DeleteCategoryById(int64(id))
-			responseWithJSON(writer, http.StatusOK, map[string]string{"message": "Category was deleted"})
+			responseWithJSON(w, http.StatusOK, map[string]string{"message": "Category was deleted"})
 			return
 		}
 	}
 
-	responseWithJSON(writer, http.StatusNotFound, map[string]string{"message": "Category not found"})
+	responseWithJSON(w, http.StatusNotFound, map[string]string{"message": "Category not found"})
 }
 
-func responseWithJSON(writer http.ResponseWriter, status int, object interface{}) {
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(status)
-	json.NewEncoder(writer).Encode(object)
+func responseWithJSON(w http.ResponseWriter, status int, object interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(object)
 }

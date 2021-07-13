@@ -23,3 +23,8 @@ func GetUserById(Id int) (*model.User, error) {
 		return nil, errors.New("user not found")
 	}
 }
+
+func CreateUser(user *model.User) int64 {
+	database.DB.Create(&user)
+	return user.Id
+}
