@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -10,7 +9,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello Tris")
 	database.Connect()
 	defer database.DB.Clauses()
 	r := mux.NewRouter()
