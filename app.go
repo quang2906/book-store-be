@@ -14,6 +14,6 @@ func main() {
 	database.Connect()
 	defer database.DB.Clauses()
 	r := mux.NewRouter()
-	routers.ConnectRouter(r)
+	routers.ConfigCategoryRouter(r)
 	http.ListenAndServe(":3000", r)
 }
