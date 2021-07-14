@@ -20,19 +20,19 @@ func GetCategoryById(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(params["id"])
 
 	if err != nil {
-		responseWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Invalid repository id"})
+		responseWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Invalid category id"})
 		return
 	}
 
 	categories := repo.GetAllCategories()
-	for _, repository := range categories {
-		if int(repository.Id) == id {
-			responseWithJSON(w, http.StatusOK, repository)
+	for _, category := range categories {
+		if int(category.Id) == id {
+			responseWithJSON(w, http.StatusOK, category)
 			return
 		}
 	}
 
-	responseWithJSON(w, http.StatusNotFound, map[string]string{"message": "Repository not found"})
+	responseWithJSON(w, http.StatusNotFound, map[string]string{"message": "category not found"})
 }
 
 func CreateCategory(w http.ResponseWriter, r *http.Request) {

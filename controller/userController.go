@@ -25,9 +25,9 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	users := repo.GetAllUsers()
-	for _, repository := range users {
-		if int(repository.Id) == id {
-			responseWithJSON(w, http.StatusOK, repository)
+	for _, user := range users {
+		if int(user.Id) == id {
+			responseWithJSON(w, http.StatusOK, user)
 			return
 		}
 	}
@@ -36,13 +36,21 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	var newUser *model.User
-	if err := json.NewDecoder(r.Body).Decode(&newUser); err != nil {
+	var data map[string]string
+
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 		responseWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Invalid body"})
 		return
 	}
 
-	repo.CreateUser(newUser)
+	newUser := model.User{
+		Name:        data["name"],
+		PhoneNumber: data["phone_number"],
+		Email:       data["email"],
+		Role:        data["role"],
+	}
+	newUser.HashPassword(data["password"])
+	repo.CreateUser(&newUser)
 	responseWithJSON(w, http.StatusCreated, newUser)
 }
 
@@ -63,10 +71,31 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	updateUser.Id = int64(id)
 
 	users := repo.GetAllUsers()
-	for _, category := range users {
-		if category.Id == int64(id) {
+	for _, user := range users {
+		if user.Id == int64(id) {
 			repo.UpdateUserById(int64(id), updateUser)
 			responseWithJSON(w, http.StatusOK, updateUser)
+			return
+		}
+	}
+
+	responseWithJSON(w, http.StatusNotFound, map[string]string{"message": "User not found"})
+}
+
+func DeleteUserById(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["id"])
+
+	if err != nil {
+		responseWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Invalid user id"})
+		return
+	}
+
+	users := repo.GetAllUsers()
+	for _, user := range users {
+		if user.Id == int64(id) {
+			repo.DeleteUserById(int64(id))
+			responseWithJSON(w, http.StatusOK, map[string]string{"message": "user was deleted"})
 			return
 		}
 	}

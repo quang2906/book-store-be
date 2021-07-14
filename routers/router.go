@@ -23,5 +23,6 @@ func ConfigUserRouter(router *mux.Router) {
 	user.Path("/{id}").Methods(http.MethodGet).HandlerFunc(controller.GetUserById)
 	user.Path("").Methods(http.MethodPost).HandlerFunc(controller.CreateUser)
 	user.Path("/{id}").Methods(http.MethodPut).HandlerFunc(controller.UpdateUser)
+	user.Path("/{id}").Methods(http.MethodDelete).HandlerFunc(controller.DeleteUserById)
 
 }

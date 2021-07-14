@@ -40,3 +40,13 @@ func UpdateUserById(Id int64, userUpdate *model.User) error {
 		return errors.New("user not found")
 	}
 }
+
+func DeleteUserById(Id int64) error {
+	user := new(model.User)
+	database.DB.Where("id = ?", Id).Delete(&user)
+	if user != nil {
+		return nil
+	} else {
+		return errors.New("user not found")
+	}
+}

@@ -13,11 +13,7 @@ type User struct {
 	ModifiedAt  int64  `json:"modifiedAt" gorm:"autoUpdateTime:milli"`
 }
 
-func (user *User) SetPassword(password string) {
+func (user *User) HashPassword(password string) {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
 	user.Password = hashedPassword
-}
-
-func (user *User) ComparePassword(password string) error {
-	return bcrypt.CompareHashAndPassword(user.Password, []byte(password))
 }
