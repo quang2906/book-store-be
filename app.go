@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -10,10 +9,10 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello Tris")
 	database.Connect()
 	defer database.DB.Clauses()
 	r := mux.NewRouter()
 	routers.ConfigCategoryRouter(r)
+	routers.ConfigUserRouter(r)
 	http.ListenAndServe(":3000", r)
 }
