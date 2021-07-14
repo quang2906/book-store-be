@@ -16,3 +16,12 @@ func ConfigCategoryRouter(router *mux.Router) {
 	category.Path("/{id}").Methods(http.MethodDelete).HandlerFunc(controller.DeleteCategoryById)
 
 }
+
+func ConfigProductsRouter(router *mux.Router) {
+	product := router.PathPrefix("/products").Subrouter()
+	product.Path("").Methods(http.MethodGet).HandlerFunc(controller.GetAllProducts)
+	product.Path("/{id}").Methods(http.MethodGet).HandlerFunc(controller.GetProductById)
+	product.Path("").Methods(http.MethodPost).HandlerFunc(controller.CreateProduct)
+	product.Path("/{id}").Methods(http.MethodPut).HandlerFunc(controller.UpdateProductById)
+	product.Path("/{id}").Methods(http.MethodDelete).HandlerFunc(controller.DeleteProductById)
+}
