@@ -24,7 +24,7 @@ func ConfigProductsRouter(router *mux.Router) {
 	product.Path("").Methods(http.MethodPost).HandlerFunc(controller.CreateProduct)
 	product.Path("/{id}").Methods(http.MethodPut).HandlerFunc(controller.UpdateProductById)
 	product.Path("/{id}").Methods(http.MethodDelete).HandlerFunc(controller.DeleteProductById)
-  
+
 }
 
 func ConfigUserRouter(router *mux.Router) {
@@ -35,4 +35,12 @@ func ConfigUserRouter(router *mux.Router) {
 	user.Path("/{id}").Methods(http.MethodPut).HandlerFunc(controller.UpdateUser)
 	user.Path("/{id}").Methods(http.MethodDelete).HandlerFunc(controller.DeleteUserById)
 
+}
+func ConfigOrderRouter(router *mux.Router) {
+	order := router.PathPrefix("/v1/orders").Subrouter()
+	order.Path("").Methods(http.MethodGet).HandlerFunc(controller.GetAllOrder)
+	order.Path("/{id}").Methods(http.MethodGet).HandlerFunc(controller.GetOrderById)
+	order.Path("").Methods(http.MethodPost).HandlerFunc(controller.CreateOrder)
+	order.Path("/{id}").Methods(http.MethodPut).HandlerFunc(controller.UpdateOrderById)
+	order.Path("/{id}").Methods(http.MethodDelete).HandlerFunc(controller.DeleteOrderById)
 }

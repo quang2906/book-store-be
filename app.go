@@ -15,7 +15,7 @@ func main() {
 	routers.ConfigCategoryRouter(r)
 	routers.ConfigProductsRouter(r)
 	routers.ConfigUserRouter(r)
-
+	routers.ConfigOrderRouter(r)
 	http.ListenAndServe(":3000", r)
 
 }
