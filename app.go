@@ -13,6 +13,9 @@ func main() {
 	defer database.DB.Clauses()
 	r := mux.NewRouter()
 	routers.ConfigCategoryRouter(r)
+	routers.ConfigProductsRouter(r)
 	routers.ConfigUserRouter(r)
+
 	http.ListenAndServe(":3000", r)
+
 }
