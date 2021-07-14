@@ -24,7 +24,7 @@ func GetAllProducts() []*model.Product {
 
 func GetProductById(Id int64) (*model.Product, error) {
 	product := new(model.Product)
-	database.DB.Preload("image").Where("id = ?", Id).Find(&product)
+	database.DB.Preload("Image").Where("id = ?", Id).Find(&product)
 	if product != nil {
 		return product, nil
 	}
