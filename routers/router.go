@@ -18,8 +18,11 @@ func ConfigCategoryRouter(router *mux.Router) {
 }
 
 func ConfigProductsRouter(router *mux.Router) {
-	product := router.PathPrefix("/products").Subrouter()
-	product.Path("").Methods(http.MethodGet).HandlerFunc(controller.GetAllProducts)
+	product := router.PathPrefix("/v1/products").Subrouter()
+
+	product.Path("").Methods(http.MethodGet).HandlerFunc(controller.SearchProduct)
+	product.Path("/sort").Methods(http.MethodGet).HandlerFunc(controller.SortProduct)
+	// product.Path("").Methods(http.MethodGet).HandlerFunc(controller.GetAllProducts)
 	product.Path("/{id}").Methods(http.MethodGet).HandlerFunc(controller.GetProductById)
 	product.Path("").Methods(http.MethodPost).HandlerFunc(controller.CreateProduct)
 	product.Path("/{id}").Methods(http.MethodPut).HandlerFunc(controller.UpdateProductById)
