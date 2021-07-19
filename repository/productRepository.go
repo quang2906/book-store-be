@@ -11,6 +11,7 @@ import (
 
 var (
 	products []*model.Product
+	limit    int = 6
 )
 
 func CreateNewProduct(product *model.Product) int64 {
@@ -30,6 +31,16 @@ func GetProductById(Id int64) (*model.Product, error) {
 	database.DB.Preload("Image").Where("id = ?", Id).Find(&product)
 	if product != nil {
 		return product, nil
+	}
+	return nil, errors.New("product not found")
+}
+
+func GetProductByCategory(categoryId int64, offset int) ([]*model.Product, error) {
+	var products []*model.Product
+	sql := "SELECT * FROM products where category_id=? limit 6 offset ?;"
+	database.DB.Raw(sql, categoryId, offset).Scan(&products)
+	if products != nil {
+		return products, nil
 	}
 	return nil, errors.New("product not found")
 }
@@ -57,39 +68,56 @@ func UpdateProductById(Id int64, productUpdate *model.Product) error {
 func SearchProductRepo(nameProduct string, offset int) []model.Product {
 	key := "%" + nameProduct + "%"
 	var products []model.Product
-	sql := "select * from products where products.name LIKE ? limit 6 offset ?"
-	fmt.Print(sql)
-	database.DB.Raw(sql, key,offset).Scan(&products)
-	fmt.Println(database.DB.Raw(sql, key).Offset(offset))
-	fmt.Println(products)
+	// sql := "select * from products where products.name LIKE ? limit 6 offset ?"
+	// fmt.Print(sql)
+	// database.DB.Preload("Image").Raw(sql, key, offset).Scan(&products)
+	// fmt.Println(database.DB.Preload("Image").Raw(sql, key).Offset(offset))
+	// fmt.Println(products)
+
+	database.DB.Preload("Image").Where("products.name LIKE ?", key).Limit(limit).Offset(offset).Find(&products)
 	return products
 }
 
 func SortProductRepo(sort string, offset int) []model.Product {
 	var products []model.Product
-	priceAsc := "select * from products order by products.price limit 6 offset ?"
-	priceDesc := "select * from products order by products.price desc limit 6 offset ?"
-	nameAsc := "select * from products order by products.name limit 6 offset ?"
-	nameDesc := "select * from products order by products.name desc limit 6 offset ?"
+	// priceAsc := "select * from products order by products.price limit 6 offset ?"
+	// priceDesc := "select * from products order by products.price desc limit 6 offset ?"
+	// nameAsc := "select * from products order by products.name limit 6 offset ?"
+	// nameDesc := "select * from products order by products.name desc limit 6 offset ?"
+	// if sort == "priceasc" {
+	// 	database.DB.Raw(priceAsc, offset).Scan(&products)
+	// 	fmt.Println(products)
+	// }
+	// if sort == "pricedesc" {
+	// 	database.DB.Raw(priceDesc, offset).Scan(&products)
+	// }
+	// if sort == "nameasc" {
+	// 	database.DB.Raw(nameAsc, offset).Scan(&products)
+	// }
+	// if sort == "namedesc" {
+	// 	fmt.Println("1")
+	// 	database.DB.Raw(nameDesc, offset).Scan(&products)
+	// }
+
 	if sort == "priceasc" {
-		database.DB.Raw(priceAsc, offset).Scan(&products)
+		database.DB.Preload("Image").Order("products.price").Limit(limit).Offset(offset).Find(&products)
 		fmt.Println(products)
 	}
 	if sort == "pricedesc" {
-		database.DB.Raw(priceDesc).Scan(&products)
+		database.DB.Preload("Image").Order("products.price desc").Limit(limit).Offset(offset).Find(&products)
 	}
 	if sort == "nameasc" {
-		database.DB.Raw(nameAsc).Scan(&products)
+		database.DB.Preload("Image").Order("products.name").Limit(limit).Offset(offset).Find(&products)
 	}
 	if sort == "namedesc" {
-		fmt.Println("1")
-		database.DB.Raw(nameDesc).Scan(&products)
+		database.DB.Preload("Image").Order("products.name desc").Limit(limit).Offset(offset).Find(&products)
 	}
 	return products
 }
 
-func TotalProduct() int {
+func TotalProduct(nameProduct string) int {
 	var totalProducts int
-	database.DB.Raw("select count(*) from products").Scan(&totalProducts)
+	key := "%" + nameProduct + "%"
+	database.DB.Raw("select count(*) from products where products.name LIKE ?", key).Scan(&totalProducts)
 	return totalProducts
 }

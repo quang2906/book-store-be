@@ -24,17 +24,35 @@ func GetProductById(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(params["id"])
 
 	if err != nil {
-		responseWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Invalid repository id"})
+		responseWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Invalid product id"})
 		return
 	}
 	products := repo.GetAllProducts()
-	for _, repository := range products {
-		if int(repository.Id) == id {
-			responseWithJSON(w, http.StatusOK, repository)
+	for _, product := range products {
+		if int(product.Id) == id {
+			responseWithJSON(w, http.StatusOK, product)
 			return
 		}
 	}
-	responseWithJSON(w, http.StatusNotFound, map[string]string{"message": "Repository not found"})
+	responseWithJSON(w, http.StatusNotFound, map[string]string{"message": "product not found"})
+}
+
+func GetProductByCategory(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["id"])
+
+	if err != nil {
+		responseWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Invalid product id"})
+		return
+	}
+	products := repo.GetAllProducts()
+	for _, product := range products {
+		if int(product.Id) == id {
+			responseWithJSON(w, http.StatusOK, product)
+			return
+		}
+	}
+	responseWithJSON(w, http.StatusNotFound, map[string]string{"message": "product not found"})
 }
 
 func CreateProduct(writer http.ResponseWriter, request *http.Request) {
@@ -97,22 +115,27 @@ func SearchProduct(writer http.ResponseWriter, request *http.Request) {
 	// lay param
 	nameProduct := request.URL.Query().Get("name")
 	page, _ := strconv.Atoi(request.URL.Query().Get("page"))
-	totalProduct := repo.TotalProduct()
-	pageMax := pageMax(totalProduct)
-	// tinh pagemax de ko cho goi hon so page co
-	if page > pageMax {
-		page = pageMax
-	}
-	pageOffset := pageRequest(page)
 
 	//check loai bo ki tu dac biet
 	nameProduct = strings.Replace(nameProduct, "%", "", -1)
 	nameProduct = strings.Replace(nameProduct, "-", "", -1)
 
+	totalProduct := repo.TotalProduct(nameProduct)
+	pageMax := pageMax(totalProduct)
+
+	// tinh pagemax de ko cho goi hon so page co
+	if page > pageMax {
+		page = pageMax
+	}
+
+	pageOffset := pageRequest(page)
+
 	products := repo.SearchProductRepo(nameProduct, pageOffset)
+
 	res := model.ResponseProduct{
 		TotalPage:    pageMax,
 		TotalProduct: totalProduct,
+		PageIndex:    page,
 		Products:     products,
 	}
 	responseWithJSON(writer, http.StatusOK, res)
@@ -122,7 +145,7 @@ func SortProduct(writer http.ResponseWriter, request *http.Request) {
 	sortProduct := request.URL.Query().Get("sort")
 	page, _ := strconv.Atoi(request.URL.Query().Get("page"))
 	// lay count
-	totalProduct := repo.TotalProduct()
+	totalProduct := repo.TotalProduct("")
 	pageMax := pageMax(totalProduct)
 	// tinh pagemax de ko cho goi hon so page co
 	if page > pageMax {
@@ -139,21 +162,17 @@ func SortProduct(writer http.ResponseWriter, request *http.Request) {
 	res := model.ResponseProduct{
 		TotalPage:    pageMax,
 		TotalProduct: totalProduct,
+		PageIndex:    page,
 		Products:     products,
 	}
 	responseWithJSON(writer, http.StatusOK, res)
 }
 
-// b1 : totalproduct = select query
-// b2 : pageMax  = totalproduct / limit
-// b3  if !%==0 {pageMax +1 }
-// b4 if indexpage cua fe > pageMax {return pageMax}
 func pageRequest(page int) int {
 	offset := (page - 1) * limit
 	return offset
 }
 func pageMax(totalProduct int) int {
-	// pageMax := totalProduct%3==0 ? totalProduct/3 : totalProduct/3+1
 	var pageMax int
 	if totalProduct%limit == 0 {
 		pageMax = totalProduct / limit
