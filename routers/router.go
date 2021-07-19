@@ -5,6 +5,7 @@ import (
 
 	"github.com/gorilla/mux"
 	controller "github.com/quang2906/book_store_be/controller"
+	"github.com/quang2906/book_store_be/util"
 )
 
 func ConfigCategoryRouter(router *mux.Router) {
@@ -46,4 +47,11 @@ func ConfigOrderRouter(router *mux.Router) {
 	order.Path("").Methods(http.MethodPost).HandlerFunc(controller.CreateOrder)
 	order.Path("/{id}").Methods(http.MethodPut).HandlerFunc(controller.UpdateOrderById)
 	order.Path("/{id}").Methods(http.MethodDelete).HandlerFunc(controller.DeleteOrderById)
+}
+
+func ConfigFileRouter(router *mux.Router) {
+	r := router.PathPrefix("/v1").Subrouter()
+	r.Path("/uploads").Methods(http.MethodPost).HandlerFunc(util.UploadFile)
+	images := http.StripPrefix("/images/", http.FileServer(http.Dir("./public/")))
+	r.PathPrefix("/images/").Handler(images)
 }
