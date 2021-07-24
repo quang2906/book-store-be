@@ -69,6 +69,8 @@ func ConfigRouter(router *mux.Router) {
 
 	adminURL := router.PathPrefix("/admin").Subrouter()
 
+	router.HandleFunc("/create-payment-intent", controller.HandleCreatePaymentIntent).Methods(http.MethodPost)
+
 	router.Path("/login").Methods(http.MethodPost).HandlerFunc(controller.SignIn)
 	router.Path("/logout").Methods(http.MethodPost).HandlerFunc(controller.Logout)
 
@@ -96,4 +98,10 @@ func ConfigRouter(router *mux.Router) {
 
 	userURL.Path("").Methods(http.MethodPost).HandlerFunc(middleware.IsAuthorized(controller.CreateOrder))
 
+	// c := cors.New(cors.Options{
+	// 	AllowedOrigins:   []string{"http://localhost:*", "http://192.168.8.235:*", "http://118.69.210.244:*"},
+	// 	AllowCredentials: true,
+	// 	AllowedMethods:   []string{"GET", "POST", "PUT", "PATH", "DELETE"},
+	// })
+	// handler := c.Handler(router)
 }
